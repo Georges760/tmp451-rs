@@ -259,11 +259,11 @@ impl<I: AsyncI2c + AsyncErrorType> AsyncTMP451<I, RangeStandard> {
         AsyncTMP451::with_address(i2c, DEFAULT_ADDRESS).await
     }
 
-    pub async fn set_extended_range(mut self) -> Result<TMP451<I, RangeExtended>, I::Error> {
+    pub async fn set_extended_range(mut self) -> Result<AsyncTMP451<I, RangeExtended>, I::Error> {
         trace!("set_extended_range");
         self.update_reg(Register::Configuration, 0b0000_0100, 0)
             .await?;
-        Ok(TMP451 {
+        Ok(AsyncTMP451 {
             i2c: self.i2c,
             address: self.address,
             range: core::marker::PhantomData::<RangeExtended>,
