@@ -218,7 +218,7 @@ impl<I: AsyncI2c + AsyncErrorType, R> AsyncTMP451<I, R> {
     ) -> Result<(), I::Error> {
         trace!("update_reg");
         let current = self.read_reg(read_reg.clone()).await?;
-        let updated = current | mask_set & !mask_clear;
+        let updated = (current | mask_set) & !mask_clear;
         if current != updated {
             self.write_reg(write_reg, updated).await?;
         }
