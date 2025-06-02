@@ -1,5 +1,8 @@
 [package]
-authors = ["Georges Palauqui <g.palauqui@gptechinno.com>"]
+authors = [
+    "Georges Palauqui <g.palauqui@gptechinno.com>",
+    "Kurtis Dinelle <kdinelle@microsoft.com>",
+]
 categories = ["embedded", "hardware-support", "no-std"]
 description = "Platform-agnostic Rust driver for the TMP451 remote and local temperature sensor."
 documentation = "https://docs.rs/tmp451"
