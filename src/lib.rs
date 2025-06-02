@@ -49,12 +49,14 @@ enum Register {
     LocalTempMSB = 0x00,
     RemoteTempMSB = 0x01,
     Status = 0x02,
-    Configuration = 0x03,
-    ConversionRate = 0x04,
+    ConfigurationRead = 0x03,
+    ConversionRateRead = 0x04,
     // LocalTempHighLimitMSB = 0x05, //TODO: impl other functionalities
     // LocalTempLowLimitMSB = 0x06,
     // RemoteTempHighLimitMSB = 0x07,
     // RemoteTempLowLimitMSB = 0x08,
+    ConfigurationWrite = 0x09,
+    ConversionRateWrite = 0x0A,
     // OneShotStart = 0x0F,
     RemoteTempLSB = 0x10,
     // RemoteTempOffsetMSB = 0x11,
@@ -154,7 +156,7 @@ impl<I: AsyncI2c + AsyncErrorType, R> AsyncTMP451<I, R> {
     /// Get the current conversion rate in Hertz.
     pub async fn conversion_rate(&mut self) -> Result<ConversionRate, I::Error> {
         trace!("conversion_rate");
-        let rate: ConversionRate = match self.read_reg(Register::ConversionRate).await? {
+        let rate: ConversionRate = match self.read_reg(Register::ConversionRateRead).await? {
             0 => ConversionRate::Rate1_16Hz,
             1 => ConversionRate::Rate1_8Hz,
             2 => ConversionRate::Rate1_4Hz,
@@ -177,7 +179,8 @@ impl<I: AsyncI2c + AsyncErrorType, R> AsyncTMP451<I, R> {
         rate: ConversionRate,
     ) -> Result<&mut Self, I::Error> {
         debug!("set_conversion_rate={:?}", rate);
-        self.write_reg(Register::ConversionRate, rate as u8).await?;
+        self.write_reg(Register::ConversionRateWrite, rate as u8)
+            .await?;
         Ok(self)
     }
     /// read_reg read a register value.
@@ -208,15 +211,16 @@ impl<I: AsyncI2c + AsyncErrorType, R> AsyncTMP451<I, R> {
     /// only if different from the initial value.
     async fn update_reg<REG: Into<u8> + Clone>(
         &mut self,
-        reg: REG,
+        read_reg: REG,
+        write_reg: REG,
         mask_set: u8,
         mask_clear: u8,
     ) -> Result<(), I::Error> {
         trace!("update_reg");
-        let current = self.read_reg(reg.clone()).await?;
+        let current = self.read_reg(read_reg.clone()).await?;
         let updated = current | mask_set & !mask_clear;
         if current != updated {
-            self.write_reg(reg, updated).await?;
+            self.write_reg(write_reg, updated).await?;
         }
         Ok(())
     }
@@ -261,8 +265,14 @@ impl<I: AsyncI2c + AsyncErrorType> AsyncTMP451<I, RangeStandard> {
 
     pub async fn set_extended_range(mut self) -> Result<AsyncTMP451<I, RangeExtended>, I::Error> {
         trace!("set_extended_range");
-        self.update_reg(Register::Configuration, 0b0000_0100, 0)
-            .await?;
+
+        self.update_reg(
+            Register::ConfigurationRead,
+            Register::ConfigurationWrite,
+            0b0000_0100,
+            0,
+        )
+        .await?;
         Ok(AsyncTMP451 {
             i2c: self.i2c,
             address: self.address,
@@ -322,8 +332,13 @@ impl<I: AsyncI2c + AsyncErrorType> AsyncTMP451<I, RangeStandard> {
 impl<I: AsyncI2c + AsyncErrorType> AsyncTMP451<I, RangeExtended> {
     pub async fn set_standard_range(mut self) -> Result<TMP451<I, RangeStandard>, I::Error> {
         trace!("set_extended_range");
-        self.update_reg(Register::Configuration, 0, 0b0000_0100)
-            .await?;
+        self.update_reg(
+            Register::ConfigurationRead,
+            Register::ConfigurationWrite,
+            0,
+            0b0000_0100,
+        )
+        .await?;
         Ok(TMP451 {
             i2c: self.i2c,
             address: self.address,
