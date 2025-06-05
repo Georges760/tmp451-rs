@@ -6,6 +6,11 @@
 pub(crate) mod fmt;
 
 mod error;
+#[cfg(any(
+    feature = "embedded-sensors-hal",
+    feature = "embedded-sensors-hal-async"
+))]
+mod sensor_hal;
 pub use error::{Error, Result};
 
 #[cfg(not(any(feature = "sync", feature = "async")))]
