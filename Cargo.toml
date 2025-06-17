@@ -12,7 +12,7 @@ license = "MIT OR Apache-2.0"
 name = "tmp451"
 repository = "https://github.com/Georges760/tmp451-rs"
 rust-version = "1.71.1"
-version = "0.2.0"
+version = "0.3.0"
 
 [dependencies]
 defmt = { version = "0.3", optional = true }
