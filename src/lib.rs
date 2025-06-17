@@ -140,6 +140,7 @@ impl From<u8> for Config {
 
 /// Pin 6 Mode.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum Pin6Mode {
     /// Pin 6 is configured as ALERT output.
     Alert,
@@ -149,6 +150,7 @@ pub enum Pin6Mode {
 
 /// Number of consecutive out-of-limit measurements before ALERT pin is activated.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum ConsecutiveAlert {
     /// One.
     One,
@@ -162,6 +164,7 @@ pub enum ConsecutiveAlert {
 
 /// Digital filtering control mode.
 #[derive(Debug, Clone, Copy)]
+#[cfg_attr(feature = "defmt-03", derive(defmt::Format))]
 pub enum DigitalFilter {
     /// Averaging is off.
     Off,
