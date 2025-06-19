@@ -18,6 +18,8 @@ version = "0.3.0"
 defmt = { version = "0.3", optional = true }
 embedded-hal = { version = "1.0", optional = true }
 embedded-hal-async = { version = "1.0", optional = true }
+embedded-sensors-hal = { version = "0.1.0", optional = true }
+embedded-sensors-hal-async = { version = "0.3.0", optional = true }
 log = { version = "0.4", optional = true }
 maybe-async-cfg = "0.2"
 rustversion = "1.0"
@@ -27,6 +29,10 @@ async = ["dep:embedded-hal-async"]
 default = ["sync"]
 defmt-03 = ["dep:defmt"]
 sync = ["dep:embedded-hal"]
+embedded-sensors-hal = ["dep:embedded-sensors-hal", "sync"]
+embedded-sensors-hal-async = ["dep:embedded-sensors-hal-async", "async"]
+embedded-sensors-use-remote = []
+embedded-sensors-use-therm = []
 
 [dev-dependencies]
 embedded-hal-mock = { version = "0.11.1", default-features = false, features = [
